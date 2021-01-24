@@ -27,7 +27,7 @@ Requisitos obrigatórios:
 	
 Requisitos desejáveis:
 	
-    - API RESTful
+    	- API RESTful
 
 Critérios de avaliação:
 	
@@ -41,10 +41,10 @@ Critérios de avaliação:
 
 Entrega da Solução:
 
-Qualquer biblioteca utilizada precisa ter uma licença de código aberto permissiva.
-O código-fonte do sistema precisa ser versionado com Git e enviado para um repositório público de sua preferência.
-O código deve incluir um arquivo README.md na raiz com a documentação do sistema, incluindo a descrição de como compilar e executar o programa, além das instruções de utilização.
-A resposta ao desafio será o link do repositório público.
+	Qualquer biblioteca utilizada precisa ter uma licença de código aberto permissiva.
+	O código-fonte do sistema precisa ser versionado com Git e enviado para um repositório público de sua preferência.
+	O código deve incluir um arquivo README.md na raiz com a documentação do sistema, incluindo a descrição de como compilar e executar o programa, além das instruções de utilização.
+	A resposta ao desafio será o link do repositório público.
 
 
 
