@@ -16,18 +16,17 @@ def cadastrar_gabarito(request):
     if request.method != "POST":
         return JsonResponse({"error":"POST request required."}, status=400)
 
-    
-     data = json.loads(request.body)
+    if request.body == b'' or request.body == None:
+            return JsonResponse({"error":"No JSON body"}, status=400)
 
-    # if not data:
-    #     return JsonResponse({"error":"No data was sent"}, status=400)
+    payload = json.loads(request.body)
     
-    # gabarito = Gabarito(gabarito=data)
-    # try:
-    #     gabarito.save()
-    # except:
-    #     return JsonResponse({"error": "Data not saved"}, status=400)
-    
+    gabarito = Gabarito(gabarito=payload)
+    try:
+        gabarito.save()
+    except:
+        return JsonResponse({"error": "Gabarito not saved"}, status=400)
+
     return JsonResponse({"message": "Data successfully saved"}, status=201)
 
 def cadastrar_resposta(request):
