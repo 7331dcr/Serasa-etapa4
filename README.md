@@ -8,7 +8,7 @@ Inside the folder `/alf`, start the server by running `python manage.py runserve
 ### `POST /aluno`  
 > Adds a new student
 ### Example request: 
-`curl -X POST -H "Content-type: application/json" -d '{ "name":"Lucas Silva" }' 'localhost:8000/aluno'`
+`curl -X POST -H "Content-type: application/json" -d '{ "name":"Fulaninho" }' 'localhost:8000/aluno'`
 
 ### `POST /gabarito`  
 > This creates both a new Prova entity and a reference answer sheet
