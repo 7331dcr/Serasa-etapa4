@@ -5,7 +5,6 @@ from django.http import JsonResponse
 from .models import Aluno, Gabarito, Prova, Respostas
 from .util import atualizar_nota
 
-#@TODO trocar nome pra ser igual da rota
 def gabarito(request):
 
     if request.method != "POST":
