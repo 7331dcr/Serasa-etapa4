@@ -5,10 +5,6 @@ from django.http import JsonResponse
 from .models import Aluno, Gabarito, Prova, Respostas
 from .util import atualizar_nota
 
-def index(request):
-    # @TODO retornar read.me
-    return render(request, "gradesmanager/index.html")
-
 #@TODO trocar nome pra ser igual da rota
 def cadastrar_gabarito(request):
 
@@ -107,17 +103,19 @@ def aprovados(request):
             
             for row in range(quantidade):
                 somatorio = somatorio + prova[row].nota
-            
             if somatorio > 0 or quantidade > 0:
                 nota_final = somatorio / quantidade
-            
             if nota_final > 7:
                 aluno.aprovado = True
             else:
                 aluno.aprovado = False
-            
-        aprovados = Aluno.objects.filter(aprovado=True)
-        print(aprovados)
+            aluno.save()
 
-    #@TODO retornar lista de aprovados
-    return JsonResponse({"aprovados":"?"})
+        aprovados = Aluno.objects.filter(aprovado=True)
+        lista_aprovados = []
+        for row in range(len(aprovados)):
+            lista_aprovados.append(aprovados[row].nome)
+        
+        aprovados = json.dumps(lista_aprovados)
+
+    return JsonResponse({"aprovados":f"{lista_aprovados}"})
