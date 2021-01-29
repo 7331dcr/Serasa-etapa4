@@ -7,8 +7,6 @@ class Aluno(models.Model):
 
 class Prova(models.Model):
     aluno_fk = models.ForeignKey(Aluno, on_delete=models.PROTECT, blank=True, null=True)
-    gabarito_fk = models.ForeignKey('Gabarito', on_delete=models.PROTECT, blank=True, null=True)
-    respostas_fk = models.ForeignKey('Respostas', on_delete=models.PROTECT, blank=True, null=True)
     nota = models.DecimalField(max_digits=3, decimal_places=1, blank=True, null=True)
     nome_prova = models.CharField(max_length=255, blank=True)
 
