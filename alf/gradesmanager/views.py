@@ -6,7 +6,7 @@ from .models import Aluno, Gabarito, Prova, Respostas
 from .util import atualizar_nota
 
 #@TODO trocar nome pra ser igual da rota
-def cadastrar_gabarito(request):
+def gabarito(request):
 
     if request.method != "POST":
         return JsonResponse({"error":"POST request required."}, status=400)
@@ -33,7 +33,7 @@ def cadastrar_gabarito(request):
     return JsonResponse({"id": entry.id}, status=201)
 
 
-def cadastrar_aluno(request):
+def aluno(request):
 
     if request.method != "POST":
         return JsonResponse({"error":"POST request required."}, status=400)
@@ -55,7 +55,7 @@ def cadastrar_aluno(request):
     return JsonResponse({"id": entry.id}, status=201)
 
 
-def cadastrar_resposta(request):
+def resposta(request):
     
     if request.method != "POST":
         return JsonResponse({"error":"POST request required."}, status=400)
