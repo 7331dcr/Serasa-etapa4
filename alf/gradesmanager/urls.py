@@ -7,5 +7,7 @@ urlpatterns = [
 
     # API Routes
     path("gabarito", views.cadastrar_gabarito, name="gabarito"),
-    path("resposta", views.cadastrar_resposta, name="resposta")
+    path("aluno", views.cadastrar_aluno, name="aluno"),
+    path("resposta", views.cadastrar_resposta, name="resposta"),
+    path("aprovados", views.aprovados, name="aprovados")
 ]
