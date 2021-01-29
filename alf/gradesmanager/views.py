@@ -3,51 +3,66 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Aluno, Gabarito, Prova
-from . import util
-
-# Create your views here.
+from .models import Aluno, Gabarito, Prova, Respostas
+from .util import atualizar_nota
 
 def index(request):
-    return render( request, "gradesmanager/index.html")
+    # Renders the API documentation 
+    return render(request, "gradesmanager/index.html")
 
 @csrf_exempt
 def cadastrar_gabarito(request):
     
-    # jeferson = '{[ {"p1":"r1"},{"p2":"r2"},{"p3":"r3"},{"p4":"r4"} ]}'
-    # x = '{ "name":"John", "age":30, "city":"New York"}'
-    
-    # joyce = {[
-    #     {"p1":"r1"},
-    #     {"p2":"r2"},
-    #     {"p3","r3"}
-    # ]}
-    # joyco = json.dumps(joyce)
-    # print(joyco)
-    # jenifer = json.loads(jeferson)
-    # print(jenifer)
-
-
     if request.method != "POST":
         return JsonResponse({"error":"POST request required."}, status=400)
-
+    
     if request.body == b'' or request.body == None:
             return JsonResponse({"error":"No JSON body"}, status=400)
 
     payload = json.loads(request.body)
-    print(payload['data'])
+
+    prova = Prova(nome_prova=payload['test_name'])
+    try:
+        prova.save()
+    except:
+        return JsonResponse({"error": "Faield to add new entry"}, status=400)
 
     for row in payload['data']:
         pergunta = list(row.keys())[0]
         resposta = list(row.values())[0]
-        entry = Gabarito(pergunta=pergunta, resposta=resposta)
+        entry = Gabarito(prova_fk=prova, pergunta=pergunta, resposta=resposta)
         try:
             entry.save()
         except:
-            return JsonResponse({"error": "Gabarito not saved"}, status=400)
+            return JsonResponse({"error": "Faield to add new entry"}, status=400)
 
-    return JsonResponse({"message": "Data successfully saved"}, status=201)
+    return JsonResponse({"message": "Successfully added new entry"}, status=201)
 
+
+@csrf_exempt
+def cadastrar_aluno(request):
+
+    if request.method != "POST":
+        return JsonResponse({"error":"POST request required."}, status=400)
+    
+    if request.body == b'' or request.body == None:
+            return JsonResponse({"error":"No JSON body"}, status=400)
+
+    limit = Aluno.objects.all()
+    if len(limit) > 100:
+        return JsonResponse({"error":"Limit of 100 students reached"}, status=400)
+
+    payload = json.loads(request.body)
+    entry = Aluno(nome=payload['student_name'])
+    try:
+        entry.save()
+    except:
+        return JsonResponse({"error": "Failed to add new entry"}, status=400)
+
+    return JsonResponse({"message": "Successfully added new entry"}, status=201)
+
+
+@csrf_exempt
 def cadastrar_resposta(request):
     
     if request.method != "POST":
@@ -55,26 +70,60 @@ def cadastrar_resposta(request):
     
     if request.body == b'' or request.body == None:
             return JsonResponse({"error":"No JSON body"}, status=400)
-    
-    # Demands JSON query
-    gabarito_id = request.GET.get('gabarito_id', '')
-    aluno_id = request.GET.get('aluno_id', '')
-    if gabarito_id == '' or aluno_id == '':
-        return JsonResponse({
-            "error":"Missing queries: 'gabarito_id' and 'aluno_id'"
-        }, status=400)
 
-    # Saves payload to database
     payload = json.loads(request.body)
-    respostas = Prova(respostas=payload)
+
+    # Checks if student_id exists in the db
     try:
-        respostas.save()
+        aluno = Aluno.objects.get(id=payload['student_id'])
     except:
-        return JsonResponse({"error": "Resposta not saved"}, status=400)
+        return JsonResponse({"error": "'Aluno' not found"}, status=400)
     
-    # Updates "nota" field after saving "respostas" to db
-    ## RUN FUNCTION to from util to update the "nota" field
+    # Checks if test_id exists in the db
+    try:
+        prova = Prova.objects.get(id=payload['test_id'])
+    except:
+        return JsonResponse({"error": "'Prova' not found"}, status=400)
 
+    # Saves entries to database
+    prova.aluno_fk = aluno
+    prova.save()
+    for row in payload['data']:
+        pergunta = list(row.keys())[0]
+        resposta = list(row.values())[0]
+        entry = Respostas(prova_fk=prova, pergunta=pergunta, resposta=resposta)
+        try:
+            entry.save()
+        except:
+            return JsonResponse({"error": "Faield to add new entry"}, status=400)
 
+    atualizar_nota(prova)
 
-    return False
+    return JsonResponse({"message": "Successfully added new entry"}, status=201)
+
+def aprovados(request):
+    
+    if request.method == "GET":
+
+        alunos = Aluno.objects.all()
+
+        for aluno in alunos:
+            prova = Prova.objects.filter(aluno_fk=aluno.id)
+            quantidade = len(prova)
+            somatorio = 0
+            nota_final = 0
+            
+            for row in range(quantidade):
+                somatorio = somatorio + prova[row].nota
+            
+            if somatorio > 0 or quantidade > 0:
+                nota_final = somatorio / quantidade
+            
+            if nota_final > 7:
+                aluno.aprovado = True
+            else:
+                aluno.aprovado = False
+            
+            print(aluno.aprovado)
+
+    return JsonResponse({"aprovados":"?"})
